@@ -1,6 +1,6 @@
 require Logger
 
-defmodule Chitchat.Client do
+defmodule ChitChat.Client do
     use GenServer
 
     def start_link(sock) do
@@ -8,7 +8,8 @@ defmodule Chitchat.Client do
     end
 
     def init(sock) do
-        Logger.info "Started client with socket: #{inspect sock}"
+        Logger.info "Started client (#{inspect self}) with socket: #{inspect sock}"
+        GenEvent.notify(:ClientMgr, {:new_client, {self}})
         {:ok, HashDict.new}
     end
 

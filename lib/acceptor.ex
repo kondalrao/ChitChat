@@ -1,10 +1,10 @@
 require Logger
 
-defmodule Chitchat.Acceptor do
+defmodule ChitChat.Acceptor do
     use GenServer
 
-    def start_link do
-        GenServer.start_link(__MODULE__, :ok, name: Acceptor)
+    def start_link(_opts \\ []) do
+        GenServer.start_link(__MODULE__, :ok, _opts)
     end
 
     def init(:ok) do
@@ -22,10 +22,11 @@ defmodule Chitchat.Acceptor do
         set_sockopt(listenSocket, clientSocket)
 
         ## Start the client and transfer the socket to it
-        {:ok, clientPid} = Chitchat.ClientSup.start_client(ChitchatClientSup, clientSocket)
+        {:ok, clientPid} = ChitChat.ClientSup.start_client(:ChitChatClientSup, clientSocket)
         :gen_tcp.controlling_process(clientSocket, clientPid)
 
         ## Help the client to start receiving data
+        ## GenServer.cast(clientPid, {:new_socket, clientSocket})
         :inet.setopts(clientSocket, [{:active, :once}])
 
         ## Start accepting the new clients
